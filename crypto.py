@@ -12,15 +12,6 @@ def is_prime(n):
         return False
     return all(n % ii for ii in range(3, int(math.sqrt(n)) + 1, 2))
 
-"""Euler's Totient Function
-"""
-def phi(n):
-    y = n
-    for ii in range(2, n + 1):
-        if is_prime(ii) and n % ii == 0:
-            y *= 1 - 1.0/ii
-    return int(y)
-
 """ found this one on internet: seems much more efficient
 def is_prime(a):
     return not ( a < 2 or any(a % i == 0 for i in range(2, int(a ** 0.5) + 1)))
@@ -50,21 +41,16 @@ class DiffieHellman(object):
         while not is_prime(mod):
             mod = random.randint(5, 1000000)
             
-        while True:
-            # we generate a random element 'g' prime to mod
-            g = random.randint(2, mod)
-            #if gcd(g, mod) != 1: continue
-            #this line is useless since we use a prime for modulo
+        # we generate a random element 'g' prime to mod
+        g = random.randint(2, mod)
 
-            test = g**2 % mod
-            order = 2
+        test = g**2 % mod
+        order = 2
 
-            # we get the order of g
-            while test != 1:
-                test = (test * g) % mod
-                order += 1
-
-            if test == 1: break
+        # we get the order of g
+        while test != 1:
+            test = (test * g) % mod
+            order += 1
 
         self.G, self.g = (mod, order), g
         return self.G, self.g
