@@ -6,6 +6,8 @@ from fractions import gcd
 """Return True if n is prime
 """
 def is_prime(n):
+    if n < 1:
+        return False
     if n % 2 == 0 and n > 2: 
         return False
     return all(n % ii for ii in range(3, int(math.sqrt(n)) + 1, 2))
@@ -29,7 +31,7 @@ class DiffieHellman(object):
     """
     def generate_group(self):
         # we generate a new group
-        mod = 4
+        mod = 0
         while not is_prime(mod):
             mod = random.randint(5, 1000000)
             
@@ -68,30 +70,6 @@ class DiffieHellman(object):
         return True
 
 
-"""Testing Diffie Hellman
-"""
-# 1. BOB
-bob = DiffieHellman()
-# G and g are generated automatically
-print("G is a group mod %i and of order %i, and the generator g is %i" % (bob.G[0], bob.G[1], bob.g))
-# we generate a secret and a public key
-bob.generate_secret()
-bob.generate_public()
-
-# 2. ALICE
-# We already know G and g
-alice = DiffieHellman(bob.G, bob.g)
-# We generate the secret key and the public key
-alice.generate_secret()
-alice.generate_public()
-
-# 3. WE CREATE THE SHARED KEY
-bob.generate_sharedkey(alice.publickey)
-alice.generate_sharedkey(bob.publickey)
-
-# 4. Bob and Alice now have the same _sharedkey and the same public (G, g)
-
-
 """ElGamal Encryption
 """
 class ElGamal(DiffieHellman):
@@ -117,31 +95,18 @@ class ElGamal(DiffieHellman):
             inverse += 1
             test = self._sharedkey * inverse % self.G[0]
         self._sharedkey_inverse = inverse
-            
 
-"""Testing ElGamal Encryption
+
+"""RSA Encryption
 """
-
-# 1. BOB
-bob = ElGamal()
-bob.generate_secret()
-bob.generate_public()
-
-# 2. ALICE
-alice = ElGamal(bob.G, bob.g)
-alice.generate_secret()
-alice.generate_public()
-
-# 3. WE CREATE THE SHARED KEY
-bob.generate_sharedkey(alice.publickey)
-alice.generate_sharedkey(bob.publickey)
-
-# 4. WE TRY TO ENCRYPT ONE MESSAGE
-encrypted = bob.encrypt(56)
-print("we are encrypting the number '56' -> %i" % encrypted)
-
-# 5. WE SEND IT TO ALICE
-message = alice.decrypt(encrypted)
-print("we are decrypting the code '%i' -> %i" % (encrypted, message))
-
-
+class RSA(object):
+        
+    def generate_publickey(self):
+        p, q = 0
+        
+        while not is_prime(p):
+            p = random.randint(2, 100000)
+        while not is_prime(q):
+            q = random.randint(2, 100000)
+                        
+    
