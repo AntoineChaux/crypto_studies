@@ -96,15 +96,28 @@ alice.generate_sharedkey(bob.publickey)
 """
 class ElGamal(DiffieHellman):
 
+    _sharedkey_inverse = 0
+
     def encrypt(self, message):
         if self._sharedkey == 0:
             return False
         encrypted = (message * self._sharedkey) % self.G[0]
-        return self.publickey, encrypted
+        return encrypted
 
     def decrypt(self, encrypted):
-        
+        if self._sharedkey_inverse == 0:
+            self.generate_sharedkey_inverse()
+        message = encrypted * self._sharedkey_inverse % self.G[0]
+        return message
 
+    def generate_sharedkey_inverse(self):
+        inverse = 2
+        test = self._sharedkey * inverse % self.G[0]
+        while test != 1:
+            inverse += 1
+            test = self._sharedkey * inverse % self.G[0]
+        self._sharedkey_inverse = inverse
+            
 
 """Testing ElGamal Encryption
 """
@@ -124,6 +137,11 @@ bob.generate_sharedkey(alice.publickey)
 alice.generate_sharedkey(bob.publickey)
 
 # 4. WE TRY TO ENCRYPT ONE MESSAGE
-print(bob.encrypt(56))
+encrypted = bob.encrypt(56)
+print("we are encrypting the number '56' -> %i" % encrypted)
+
+# 5. WE SEND IT TO ALICE
+message = alice.decrypt(encrypted)
+print("we are decrypting the code '%i' -> %i" % (encrypted, message))
 
 
