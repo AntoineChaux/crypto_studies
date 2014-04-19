@@ -150,16 +150,3 @@ class RSA(object):
 
     def decrypt(self, encrypted):
         return (encrypted ** self._privatekey[1]) % self._privatekey[0]
-
-"""Testint RSA Encryption
-"""
-bob = RSA()
-bob.generate_keys()
-
-
-alice = RSA(publickey = (bob.publickey))
-encrypted = alice.encrypt(56)
-
-
-message = bob.decrypt(encrypted)
-print(message)
