@@ -46,3 +46,19 @@ print("we are encrypting the number '56' -> %i" % encrypted)
 # 5. WE SEND IT TO ALICE
 message = alice.decrypt(encrypted)
 print("we are decrypting the code '%i' -> %i" % (encrypted, message))
+
+
+"""Testint RSA Encryption
+"""
+
+# 1. WE GENERATE A PAIR OF PRIVATE/PUBLIC KEYS
+bob = RSA()
+bob.generate_keys()
+
+# 2. WE ENCRYPT A SIMPLE MESSAGE WITH THE PUBLIC KEYS
+alice = RSA(publickey = (bob.publickey))
+encrypted = alice.encrypt(56)
+
+# 3. WE TRY TO DECRYPT WITH THE PRIVATE KEYS
+message = bob.decrypt(encrypted)
+print(message)

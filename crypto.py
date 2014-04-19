@@ -12,6 +12,21 @@ def is_prime(n):
         return False
     return all(n % ii for ii in range(3, int(math.sqrt(n)) + 1, 2))
 
+"""Euler's Totient Function
+"""
+def phi(n):
+    y = n
+    for ii in range(2, n + 1):
+        if is_prime(ii) and n % ii == 0:
+            y *= 1 - 1.0/ii
+    return int(y)
+
+""" found this one on internet: seems much more efficient
+def is_prime(a):
+    return not ( a < 2 or any(a % i == 0 for i in range(2, int(a ** 0.5) + 1)))
+"""
+
+
 """This use the Diffie Hellman Protocol to share a secret key
 G is (n, o) such that g generates a group of order o in Z/nZ
 """
@@ -100,13 +115,51 @@ class ElGamal(DiffieHellman):
 """RSA Encryption
 """
 class RSA(object):
-        
-    def generate_publickey(self):
-        p, q = 0
+    def __init__(self, privatekey = 0, publickey = 0):
+        if privatekey != 0:
+            self._privatekey = privatekey
+        if publickey != 0:
+            self.publickey = publickey
+    
+    def generate_keys(self):
+        p, q = 0, 0
         
         while not is_prime(p):
-            p = random.randint(2, 100000)
-        while not is_prime(q):
-            q = random.randint(2, 100000)
-                        
-    
+            p = random.randint(2, 10000)
+        while not is_prime(q) or p == q:
+            q = random.randint(2, 10000)
+
+        n = p * q
+        phi_n = (p - 1) * (q - 1)
+
+        e = phi_n
+        while gcd(e, phi_n) != 1:
+            e = random.randint(5, phi_n - 1) # 1 < e < phi(n)
+
+        d = 2
+        test = e * d % phi_n
+        while test != 1:
+            d += 1
+            test = e * d % phi_n
+
+        self.publickey = (n, e)
+        self._privatekey = (n, d)
+
+    def encrypt(self, message):
+        return (message ** self.publickey[1]) % self.publickey[0]
+
+    def decrypt(self, encrypted):
+        return (encrypted ** self._privatekey[1]) % self._privatekey[0]
+
+"""Testint RSA Encryption
+"""
+bob = RSA()
+bob.generate_keys()
+
+
+alice = RSA(publickey = (bob.publickey))
+encrypted = alice.encrypt(56)
+
+
+message = bob.decrypt(encrypted)
+print(message)
