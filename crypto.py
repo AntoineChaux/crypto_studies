@@ -58,8 +58,9 @@ class DiffieHellman(object):
                 g = random.randint(2,mod-2) 
                 g1 = g
                 order = 1
+        
         order *= 2
-
+        
         self.G, self.g = (mod, order), g
         return self.G, self.g
 
