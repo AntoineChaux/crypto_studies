@@ -44,13 +44,21 @@ class DiffieHellman(object):
         # we generate a random element 'g' prime to mod
         g = random.randint(2, mod)
 
-        test = g**2 % mod
-        order = 2
-
         # we get the order of g
-        while test != 1:
-            test = (test * g) % mod
+        g1 = g
+        order = 1
+        while g1 != mod-1 :
+            g1 = (g1*g)%mod
             order += 1
+            if g1 == 1 :
+                g = random.randint(2,mod-2) 
+                g1 = g
+                order = 1
+            elif g1 == mod-1 and order != (mod-1)//2 :
+                g = random.randint(2,mod-2) 
+                g1 = g
+                order = 1
+        order *= 2
 
         self.G, self.g = (mod, order), g
         return self.G, self.g
@@ -61,7 +69,7 @@ class DiffieHellman(object):
     def generate_public(self):
         if self._privatekey == 0:
             return False
-        self.publickey = (self.g ** self._privatekey) % self.G[0]
+        self.publickey = (self.g ** (self._privatekey % self.G[0])) % self.G[0]
         return True
 
     def generate_sharedkey(self, publickey):
