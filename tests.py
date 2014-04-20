@@ -48,7 +48,7 @@ message = alice.decrypt(encrypted)
 print("we are decrypting the code '%i' -> %i" % (encrypted, message))
 
 
-"""Testint RSA Encryption
+"""Testing RSA Encryption
 """
 
 # 1. WE GENERATE A PAIR OF PRIVATE/PUBLIC KEYS
